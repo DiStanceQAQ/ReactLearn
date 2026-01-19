@@ -9,5 +9,6 @@ export const Colors = {
     light: '#999999',
   },
   border: '#E0E0E0',
+  required: '#FF0000',
 };
 

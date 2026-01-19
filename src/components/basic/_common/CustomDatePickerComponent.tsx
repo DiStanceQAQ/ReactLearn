@@ -11,13 +11,13 @@ import {
 } from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { Colors } from "../../../constants/colors";
+import { Theme } from "../../../constants/theme";
 
 type Props = {
   label?: string;
   labelWidth?: DimensionValue;
   labelAlign?: "left" | "center" | "right";
   inputAlign?: "left" | "center" | "right";
-  disabled?: boolean;
   readonly?: boolean;
   required?: boolean;
   placeholder?: string;
@@ -54,7 +54,6 @@ export default function CustomDatePickerComponent({
   labelWidth,
   labelAlign = "left",
   inputAlign = "left",
-  disabled = false,
   readonly = false,
   required = false,
   placeholder = "请选择日期",
@@ -67,13 +66,11 @@ export default function CustomDatePickerComponent({
   const [tempDate, setTempDate] = useState<Date | null>(() => parseDate(value) || new Date());
   const [showPicker, setShowPicker] = useState(false);
 
-  const isReadonly = readonly || disabled;
-
   const openSheet = useCallback(() => {
-    if (isReadonly) return;
+    if (readonly) return;
     setTempDate(parseDate(value) || new Date());
     setShowPicker(true);
-  }, [isReadonly, value]);
+  }, [readonly, value]);
 
   const closeSheet = useCallback(() => {
     setShowPicker(false);
@@ -115,7 +112,7 @@ export default function CustomDatePickerComponent({
       {label ? (
         <View style={[styles.labelWrap, labelWidth ? { width: labelWidth } : null]}>
           <Text style={[styles.labelText, { textAlign: labelAlign }]}>
-            {required ? "*" : ""}
+            {required ? <Text style={styles.requiredStar}>*</Text> : null}
             {label}
           </Text>
         </View>
@@ -124,16 +121,17 @@ export default function CustomDatePickerComponent({
       <TouchableOpacity
         style={[
           styles.inputBox,
-          isReadonly ? styles.inputBoxDisabled : null
+          readonly ? styles.inputBoxDisabled : null
         ]}
         activeOpacity={0.8}
         onPress={openSheet}
-        disabled={isReadonly}
+        disabled={readonly}
       >
         <Text
           style={[
             styles.inputText,
             showPlaceholder ? styles.placeholderText : null,
+            readonly ? styles.readonlyText : null,
             { textAlign: inputAlign }
           ]}
           numberOfLines={1}
@@ -163,26 +161,29 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8
+    paddingVertical: Theme.spacing.sm
   },
   labelWrap: {
-    marginRight: 8,
-    paddingTop: 4,
+    marginRight: Theme.spacing.sm,
+    paddingTop: Theme.spacing.xs,
     flexShrink: 1
   },
   labelText: {
     color: Colors.text.secondary,
-    fontSize: 13,
+    fontSize: Theme.fontSize.sm,
     flexShrink: 1,
     flexWrap: "wrap"
   },
+  requiredStar: {
+    color: Colors.required,
+  },
   inputBox: {
     flex: 1,
-    minHeight: 44,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    minHeight: Theme.controlHeight.md,
+    borderWidth: Theme.border.width,
+    borderColor: Theme.border.color,
+    borderRadius: Theme.radius.md,
+    paddingHorizontal: Theme.spacing.md,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -193,15 +194,18 @@ const styles = StyleSheet.create({
   },
   inputText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: Theme.fontSize.lg,
     color: Colors.text.primary
   },
   placeholderText: {
     color: Colors.text.light
   },
   caretIcon: {
-    marginLeft: 8,
+    marginLeft: Theme.spacing.sm,
     color: Colors.text.light,
-    fontSize: 12
+    fontSize: Theme.fontSize.xs
+  },
+  readonlyText: {
+    color: Colors.text.light
   }
 });

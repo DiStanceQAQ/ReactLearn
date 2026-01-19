@@ -1,5 +1,7 @@
 ﻿import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { ActivityIndicator, Alert, Modal, StyleSheet, Text, View } from "react-native";
+import { Colors } from "../../constants/colors";
+import { Theme } from "../../constants/theme";
 
 type LoadingConfirmHandler = (
   confirmText: string,
@@ -82,7 +84,7 @@ export function LoadingProvider({ children }: { children?: React.ReactNode }) {
       <Modal transparent visible={loadingCount > 0} animationType="fade">
         <View style={styles.overlay}>
           <View style={styles.box}>
-            <ActivityIndicator size="large" color="#ffffff" />
+            <ActivityIndicator size="large" color={Colors.white} />
             <Text style={styles.text}>加载中...</Text>
           </View>
         </View>
@@ -105,15 +107,15 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   box: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 8,
+    paddingVertical: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.lg,
+    borderRadius: Theme.radius.md,
     backgroundColor: "rgba(0,0,0,0.8)",
     alignItems: "center"
   },
   text: {
-    color: "#ffffff",
-    marginTop: 8,
-    fontSize: 14
+    color: Colors.white,
+    marginTop: Theme.spacing.xs,
+    fontSize: Theme.fontSize.md
   }
 });

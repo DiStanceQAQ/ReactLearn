@@ -1,5 +1,7 @@
-锘縤mport React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Colors } from "../../constants/colors";
+import { Theme } from "../../constants/theme";
 
 type AlertType = "warning" | "success" | string;
 
@@ -15,17 +17,17 @@ export function AlertProvider({ children }: { children?: React.ReactNode }) {
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState("");
   const [type, setType] = useState<AlertType>("warning");
-  const [title, setTitle] = useState("鎻愮ず");
+  const [title, setTitle] = useState("提示");
 
   const closeAlert = useCallback(() => {
     setVisible(false);
   }, []);
 
   const showAlert = useCallback(
-    (text: string, alertType: AlertType = "warning", alertTitle = "鎻愮ず") => {
+    (text: string, alertType: AlertType = "warning", alertTitle = "提示") => {
       setMessage(text || "");
       setType(alertType || "warning");
-      setTitle(alertTitle || "鎻愮ず");
+      setTitle(alertTitle || "提示");
       setVisible(true);
     },
     []
@@ -47,7 +49,7 @@ export function AlertProvider({ children }: { children?: React.ReactNode }) {
             <View style={styles.header}>
               <Text style={styles.title}>{title}</Text>
               <TouchableOpacity onPress={closeAlert}>
-                <Text style={styles.close}>脳</Text>
+                <Text style={styles.close}>×</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.content}>
@@ -56,7 +58,7 @@ export function AlertProvider({ children }: { children?: React.ReactNode }) {
             </View>
             <View style={styles.footer}>
               <TouchableOpacity onPress={closeAlert} style={styles.button}>
-                <Text style={styles.buttonText}>纭畾</Text>
+                <Text style={styles.buttonText}>确定</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -81,65 +83,65 @@ const styles = StyleSheet.create({
   },
   box: {
     width: "80%",
-    borderRadius: 8,
-    backgroundColor: "#ffffff",
+    borderRadius: Theme.radius.md,
+    backgroundColor: Colors.white,
     overflow: "hidden"
   },
   header: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingVertical: Theme.spacing.md,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#e5e7eb"
+    borderBottomColor: Colors.border
   },
   title: {
-    fontSize: 16,
-    color: "#111827",
+    fontSize: Theme.fontSize.lg,
+    color: Colors.text.primary,
     fontWeight: "600"
   },
   close: {
-    fontSize: 20,
-    color: "#9ca3af",
-    paddingHorizontal: 8
+    fontSize: Theme.fontSize.xl + 2,
+    color: Colors.text.light,
+    paddingHorizontal: Theme.spacing.sm
   },
   content: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingVertical: Theme.spacing.lg,
     flexDirection: "row",
     alignItems: "center"
   },
   badge: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 10
+    width: Theme.spacing.md,
+    height: Theme.spacing.md,
+    borderRadius: Theme.spacing.md / 2,
+    marginRight: Theme.spacing.sm + 2
   },
   success: {
-    backgroundColor: "#22c55e"
+    backgroundColor: Colors.primary
   },
   warning: {
-    backgroundColor: "#ef4444"
+    backgroundColor: Colors.required
   },
   message: {
     flex: 1,
-    fontSize: 14,
-    color: "#374151"
+    fontSize: Theme.fontSize.md,
+    color: Colors.text.primary
   },
   footer: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingBottom: Theme.spacing.lg,
     alignItems: "flex-end"
   },
   button: {
-    backgroundColor: "#2563eb",
-    borderRadius: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 16
+    backgroundColor: Colors.primary,
+    borderRadius: Theme.radius.sm,
+    paddingVertical: Theme.spacing.sm,
+    paddingHorizontal: Theme.spacing.lg
   },
   buttonText: {
-    color: "#ffffff",
-    fontSize: 14
+    color: Colors.white,
+    fontSize: Theme.fontSize.md
   }
 });

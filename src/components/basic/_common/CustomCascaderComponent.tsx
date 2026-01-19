@@ -9,6 +9,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import { cloneObject, treeFindPath } from "../../../utils/functionUtil";
 import { Colors } from "../../../constants/colors";
+import { Theme } from "../../../constants/theme";
 
 type FieldNames = { text: string; value: string; children: string };
 type Option = { [key: string]: any; children?: Option[] };
@@ -213,7 +214,7 @@ export default function CustomCascaderComponent({
     <View style={styles.container}>
       {label ? (
         <RNText style={[styles.inputLabel, labelAlign ? { textAlign: labelAlign } : null]}>
-          {required ? "*" : ""}
+          {required ? <RNText style={styles.requiredStar}>*</RNText> : null}
           {label}
         </RNText>
       ) : null}
@@ -221,8 +222,8 @@ export default function CustomCascaderComponent({
       <TouchableOpacity
         style={[
           styles.inputBox,
-          boxStyle,
-          disabled || readonly ? styles.inputBoxDisabled : null
+          disabled || readonly ? styles.inputBoxDisabled : null,
+          boxStyle
         ]}
         activeOpacity={0.8}
         onPress={openSheet}
@@ -291,18 +292,21 @@ export default function CustomCascaderComponent({
 }
 
 const styles = StyleSheet.create({
-  container: { marginVertical: 8 },
+  container: { marginVertical: Theme.spacing.sm },
   inputLabel: {
-    marginBottom: 6,
+    marginBottom: Theme.spacing.xs,
     color: Colors.text.secondary,
-    fontSize: 13
+    fontSize: Theme.fontSize.sm
+  },
+  requiredStar: {
+    color: Colors.required
   },
   inputBox: {
-    minHeight: 44,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    minHeight: Theme.controlHeight.md,
+    borderWidth: Theme.border.width,
+    borderColor: Theme.border.color,
+    borderRadius: Theme.radius.md,
+    paddingHorizontal: Theme.spacing.md,
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -313,7 +317,7 @@ const styles = StyleSheet.create({
   },
   inputText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: Theme.fontSize.lg,
     color: Colors.text.primary
   },
   placeholderText: {
@@ -323,16 +327,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12
+    paddingHorizontal: Theme.spacing.lg,
+    paddingVertical: Theme.spacing.md
   },
   sheetTitle: {
-    fontSize: 16,
+    fontSize: Theme.fontSize.lg,
     fontWeight: "600",
     color: Colors.text.primary
   },
   sheetAction: {
-    fontSize: 14,
+    fontSize: Theme.fontSize.md,
     color: Colors.primary
   },
   disabledText: {
@@ -340,40 +344,40 @@ const styles = StyleSheet.create({
   },
   tabs: {
     flexDirection: "row",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: Theme.spacing.md,
+    paddingVertical: Theme.spacing.sm,
     flexWrap: "wrap"
   },
   tabItem: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    paddingVertical: Theme.spacing.xs,
+    paddingHorizontal: Theme.spacing.sm + 2,
+    borderRadius: Theme.radius.lg,
     backgroundColor: Colors.background,
-    marginRight: 8,
-    marginBottom: 8
+    marginRight: Theme.spacing.sm,
+    marginBottom: Theme.spacing.sm
   },
   tabItemActive: {
     backgroundColor: "#E8F2FF"
   },
   tabText: {
-    fontSize: 13,
+    fontSize: Theme.fontSize.sm,
     color: Colors.text.secondary
   },
   optionItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingVertical: Theme.spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: Colors.border
   },
   optionText: {
-    fontSize: 16,
+    fontSize: Theme.fontSize.lg,
     color: Colors.text.primary
   },
   arrowText: {
-    fontSize: 16,
+    fontSize: Theme.fontSize.lg,
     color: Colors.text.light
   }
 });

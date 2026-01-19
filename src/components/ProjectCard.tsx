@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '../constants/colors';
+import { Theme } from '../constants/theme';
 
 interface ProjectCardProps {
   title: string;
@@ -100,90 +101,86 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.white,
-    borderRadius: 8,
-    padding: 16,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderRadius: Theme.radius.md,
+    padding: Theme.spacing.lg,
+    marginHorizontal: Theme.spacing.lg,
+    marginVertical: Theme.spacing.sm,
+    ...Theme.shadow.card,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: Theme.spacing.md,
   },
   title: {
-    fontSize: 16,
+    fontSize: Theme.fontSize.lg,
     fontWeight: 'bold',
     color: Colors.text.primary,
     flex: 1,
   },
   tag: {
     backgroundColor: Colors.orange,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+    paddingHorizontal: Theme.spacing.sm,
+    paddingVertical: Theme.spacing.xs,
+    borderRadius: Theme.radius.sm,
   },
   tagText: {
     color: Colors.white,
-    fontSize: 12,
+    fontSize: Theme.fontSize.xs,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: Theme.spacing.sm,
   },
   infoText: {
-    marginLeft: 8,
-    fontSize: 14,
+    marginLeft: Theme.spacing.sm,
+    fontSize: Theme.fontSize.md,
     color: Colors.text.secondary,
   },
   actionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
-    marginBottom: 12,
+    marginTop: Theme.spacing.md,
+    marginBottom: Theme.spacing.md,
   },
   primaryButton: {
     backgroundColor: Colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 4,
-    marginRight: 8,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingVertical: Theme.spacing.sm,
+    borderRadius: Theme.radius.sm,
+    marginRight: Theme.spacing.sm,
   },
   primaryButtonText: {
     color: Colors.white,
-    fontSize: 14,
+    fontSize: Theme.fontSize.md,
   },
   iconButton: {
-    padding: 8,
-    marginLeft: 4,
+    padding: Theme.spacing.sm,
+    marginLeft: Theme.spacing.xs,
   },
   keywordBox: {
-    borderWidth: 1,
+    borderWidth: Theme.border.width,
     borderColor: Colors.primary,
-    borderRadius: 4,
-    padding: 8,
-    marginBottom: 8,
+    borderRadius: Theme.radius.sm,
+    padding: Theme.spacing.sm,
+    marginBottom: Theme.spacing.sm,
   },
   keywordText: {
     color: Colors.primary,
-    fontSize: 14,
+    fontSize: Theme.fontSize.md,
   },
   relatedText: {
-    fontSize: 14,
+    fontSize: Theme.fontSize.md,
     color: Colors.text.secondary,
-    marginBottom: 12,
+    marginBottom: Theme.spacing.md,
   },
   footer: {
     flexDirection: 'row',
-    borderTopWidth: 1,
+    borderTopWidth: Theme.border.width,
     borderTopColor: Colors.border,
-    paddingTop: 12,
+    paddingTop: Theme.spacing.md,
   },
   footerButton: {
     flex: 1,
@@ -191,10 +188,10 @@ const styles = StyleSheet.create({
   },
   footerButtonText: {
     color: Colors.primary,
-    fontSize: 14,
+    fontSize: Theme.fontSize.md,
   },
   divider: {
-    width: 1,
+    width: Theme.border.width,
     backgroundColor: Colors.border,
   },
 });

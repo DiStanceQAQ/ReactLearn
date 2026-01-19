@@ -7,10 +7,19 @@ function normalizeOptions(options) {
   return options || {};
 }
 
-function showAlert(type, options) {
-  const { message = "", title } = normalizeOptions(options);
+// allow injection so UI layer (e.g., AlertProvider) can reuse this util
+let customHandler = (type, { message = "", title }) => {
   const alertTitle = title || type;
   Alert.alert(alertTitle, message);
+};
+
+export function setCustomMessageHandler(handler) {
+  customHandler = handler || customHandler;
+}
+
+function showAlert(type, options) {
+  const normalized = normalizeOptions(options);
+  return customHandler(type, normalized);
 }
 
 const customMessage = {
