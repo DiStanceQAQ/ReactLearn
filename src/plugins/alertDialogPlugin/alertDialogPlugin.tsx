@@ -1,7 +1,8 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+锘縤mport React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "../../constants/colors";
 import { Theme } from "../../constants/theme";
+import { OverlayRenderProps, useOverlayHost } from "../../components/overlay/OverlayHost";
 
 type AlertType = "warning" | "success" | string;
 
@@ -10,60 +11,92 @@ type AlertContextValue = {
 };
 
 const AlertContext = createContext<AlertContextValue>({
-  showAlert: () => { }
+  showAlert: () => {}
 });
 
 export function AlertProvider({ children }: { children?: React.ReactNode }) {
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState("");
   const [type, setType] = useState<AlertType>("warning");
-  const [title, setTitle] = useState("提示");
+  const [title, setTitle] = useState("鎻愮ず");
+  const overlayHost = useOverlayHost();
+  const overlayKeyRef = useRef<string | null>(null);
 
   const closeAlert = useCallback(() => {
     setVisible(false);
   }, []);
 
   const showAlert = useCallback(
-    (text: string, alertType: AlertType = "warning", alertTitle = "提示") => {
+    (text: string, alertType: AlertType = "warning", alertTitle = "鎻愮ず") => {
       setMessage(text || "");
       setType(alertType || "warning");
-      setTitle(alertTitle || "提示");
+      setTitle(alertTitle || "鎻愮ず");
       setVisible(true);
     },
     []
   );
 
-  const value = useMemo(
-    () => ({
-      showAlert
-    }),
-    [showAlert]
+  const value = useMemo(() => ({ showAlert }), [showAlert]);
+
+  const renderAlertContent = useCallback(
+    () => (
+      <View style={styles.box}>
+        <View style={styles.header}>
+          <Text style={styles.title}>{title}</Text>
+          <TouchableOpacity onPress={closeAlert}>
+            <Text style={styles.close}>脳</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.content}>
+          <View style={[styles.badge, type === "success" ? styles.success : styles.warning]} />
+          <Text style={styles.message}>{message}</Text>
+        </View>
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={closeAlert} style={styles.button}>
+            <Text style={styles.buttonText}>纭畾</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    ),
+    [closeAlert, message, title, type]
   );
+
+  useEffect(() => {
+    if (!overlayHost) return;
+    if (visible) {
+      if (overlayKeyRef.current) {
+        overlayHost.close(overlayKeyRef.current);
+      }
+      overlayKeyRef.current = overlayHost.open({
+        render: (_: OverlayRenderProps) => <View style={styles.overlay}>{renderAlertContent()}</View>,
+        overlayOpacity: Theme.opacity.overlay,
+        overlayColor: "#000",
+        closeOnOverlayPress: true,
+        onClose: closeAlert,
+        zIndex: Theme.zIndex.popup
+      });
+    } else if (overlayKeyRef.current) {
+      overlayHost.close(overlayKeyRef.current);
+      overlayKeyRef.current = null;
+    }
+    return () => {
+      if (overlayKeyRef.current) {
+        overlayHost.close(overlayKeyRef.current);
+        overlayKeyRef.current = null;
+      }
+    };
+  }, [visible, overlayHost, renderAlertContent, closeAlert]);
 
   return (
     <AlertContext.Provider value={value}>
       {children}
-      <Modal transparent visible={visible} animationType="fade">
-        <View style={styles.overlay}>
-          <View style={styles.box}>
-            <View style={styles.header}>
-              <Text style={styles.title}>{title}</Text>
-              <TouchableOpacity onPress={closeAlert}>
-                <Text style={styles.close}>×</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.content}>
-              <View style={[styles.badge, type === "success" ? styles.success : styles.warning]} />
-              <Text style={styles.message}>{message}</Text>
-            </View>
-            <View style={styles.footer}>
-              <TouchableOpacity onPress={closeAlert} style={styles.button}>
-                <Text style={styles.buttonText}>确定</Text>
-              </TouchableOpacity>
-            </View>
+      {!overlayHost && (
+        <Modal transparent visible={visible} animationType="fade">
+          <View style={[styles.overlay, styles.overlayBg]}>
+            {renderAlertContent()}
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
     </AlertContext.Provider>
   );
 }
@@ -77,9 +110,11 @@ export default AlertProvider;
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
     alignItems: "center",
     justifyContent: "center"
+  },
+  overlayBg: {
+    backgroundColor: "rgba(0,0,0,0.5)"
   },
   box: {
     width: "80%",

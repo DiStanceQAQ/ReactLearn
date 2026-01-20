@@ -1,7 +1,8 @@
-﻿import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+﻿import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Modal, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/colors";
 import { Theme } from "../../constants/theme";
+import { OverlayRenderProps, useOverlayHost } from "../../components/overlay/OverlayHost";
 
 type LoadingConfirmHandler = (
   confirmText: string,
@@ -17,13 +18,15 @@ type LoadingContextValue = {
 };
 
 const LoadingContext = createContext<LoadingContextValue>({
-  openLoading: () => { },
-  closeLoading: () => { },
-  loadingConfirm: () => { }
+  openLoading: () => {},
+  closeLoading: () => {},
+  loadingConfirm: () => {}
 });
 
 export function LoadingProvider({ children }: { children?: React.ReactNode }) {
   const [loadingCount, setLoadingCount] = useState(0);
+  const overlayHost = useOverlayHost();
+  const overlayKeyRef = useRef<string | null>(null);
 
   const openLoading = useCallback(() => {
     setLoadingCount(count => count + 1);
@@ -78,17 +81,56 @@ export function LoadingProvider({ children }: { children?: React.ReactNode }) {
     [openLoading, closeLoading, loadingConfirm]
   );
 
+  const renderLoading = useCallback(
+    (_: OverlayRenderProps) => (
+      <View style={styles.overlay}>
+        <View style={styles.box}>
+          <ActivityIndicator size="large" color={Colors.white} />
+          <Text style={styles.text}>加载中...</Text>
+        </View>
+      </View>
+    ),
+    []
+  );
+
+  useEffect(() => {
+    if (!overlayHost) return;
+    if (loadingCount > 0) {
+      if (overlayKeyRef.current) {
+        overlayHost.close(overlayKeyRef.current);
+      }
+      overlayKeyRef.current = overlayHost.open({
+        render: renderLoading,
+        overlayOpacity: 0.6,
+        overlayColor: "#000",
+        closeOnOverlayPress: false,
+        zIndex: Theme.zIndex.toast
+      });
+    } else if (overlayKeyRef.current) {
+      overlayHost.close(overlayKeyRef.current);
+      overlayKeyRef.current = null;
+    }
+    return () => {
+      if (overlayKeyRef.current) {
+        overlayHost.close(overlayKeyRef.current);
+        overlayKeyRef.current = null;
+      }
+    };
+  }, [loadingCount, overlayHost, renderLoading]);
+
   return (
     <LoadingContext.Provider value={value}>
       {children}
-      <Modal transparent visible={loadingCount > 0} animationType="fade">
-        <View style={styles.overlay}>
-          <View style={styles.box}>
-            <ActivityIndicator size="large" color={Colors.white} />
-            <Text style={styles.text}>加载中...</Text>
+      {!overlayHost && (
+        <Modal transparent visible={loadingCount > 0} animationType="fade">
+          <View style={[styles.overlay, styles.overlayBg]}>
+            <View style={styles.box}>
+              <ActivityIndicator size="large" color={Colors.white} />
+              <Text style={styles.text}>加载中...</Text>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
     </LoadingContext.Provider>
   );
 }
@@ -102,9 +144,11 @@ export default LoadingProvider;
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
     alignItems: "center",
     justifyContent: "center"
+  },
+  overlayBg: {
+    backgroundColor: "rgba(0,0,0,0.6)"
   },
   box: {
     paddingVertical: Theme.spacing.md,
