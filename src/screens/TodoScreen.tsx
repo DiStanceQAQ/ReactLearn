@@ -1,369 +1,495 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import PopupComponent from '../components/container/popup/PopupComponent';
+import CellComponent from '../components/basic/cell/CellComponent';
 
 export const TodoScreen = () => {
-  // 基础弹窗测试
-  const [centerVisible, setCenterVisible] = useState(false);
-  const [topVisible, setTopVisible] = useState(false);
-  const [bottomVisible, setBottomVisible] = useState(false);
-  const [leftVisible, setLeftVisible] = useState(false);
-  const [rightVisible, setRightVisible] = useState(false);
+  // 状态管理
+  const [clickCount, setClickCount] = useState(0);
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
 
-  // 样式弹窗测试
-  const [roundVisible, setRoundVisible] = useState(false);
-  const [noOverlayVisible, setNoOverlayVisible] = useState(false);
-  const [closeableVisible, setCloseableVisible] = useState(false);
-  const [customIconVisible, setCustomIconVisible] = useState(false);
-  const [customStyleVisible, setCustomStyleVisible] = useState(false);
+  const handleCellPress = (message: string, action?: () => void) => {
+    setClickCount(prev => prev + 1);
+    Alert.alert('Cell 点击事件', message, [
+      { text: '确定', onPress: action },
+      { text: '取消', style: 'cancel' }
+    ]);
+  };
 
-  // 新增动画效果测试
-  const [fadeVisible, setFadeVisible] = useState(false);
-  const [scaleVisible, setScaleVisible] = useState(false);
-  const [multiLayerVisible, setMultiLayerVisible] = useState(false);
+  const handleUrlPress = async (url: string) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert('错误', '无法打开链接');
+      }
+    } catch (error) {
+      Alert.alert('错误', '打开链接失败');
+    }
+  };
 
-  const renderButton = (title: string, onPress: () => void, color?: string) => (
-    <TouchableOpacity
-      style={[styles.button, color ? { backgroundColor: color } : null]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <Text style={styles.buttonText}>{title}</Text>
-    </TouchableOpacity>
-  );
+  const refreshTime = () => {
+    setCurrentTime(new Date().toLocaleTimeString());
+  };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>PopupComponent 增强功能测试</Text>
-        <Text style={styles.subtitle}>体验流畅的动画效果和丰富的功能</Text>
+        <Text style={styles.title}>CellComponent 完整功能测试</Text>
+        <Text style={styles.subtitle}>测试所有Props和功能特性</Text>
+        <Text style={styles.counter}>点击次数: {clickCount} | 时间: {currentTime}</Text>
       </View>
 
-      {/* 基础位置测试 */}
+      {/* 1. 基础用法测试 */}
       <View style={styles.testSection}>
-        <Text style={styles.sectionTitle}>📍 基础位置</Text>
-        <Text style={styles.description}>测试不同弹出位置的布局和动画效果</Text>
-        <View style={styles.buttonRow}>
-          {renderButton('居中弹窗', () => setCenterVisible(true))}
-          {renderButton('顶部弹窗', () => setTopVisible(true))}
-        </View>
-        <View style={styles.buttonRow}>
-          {renderButton('底部弹窗', () => setBottomVisible(true))}
-          {renderButton('左侧弹窗', () => setLeftVisible(true))}
-        </View>
-        <View style={styles.buttonRow}>
-          {renderButton('右侧弹窗', () => setRightVisible(true))}
+        <Text style={styles.sectionTitle}>📝 基础用法</Text>
+        <Text style={styles.description}>测试title、value、label基本属性</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent title="用户名" value="张三" />
+          <CellComponent title="邮箱地址" value="user@example.com" />
+          <CellComponent
+            title="个人简介"
+            label="这里是描述信息，展示在标题下方"
+            value="查看详情"
+          />
         </View>
       </View>
 
-      {/* 样式和交互测试 */}
+      {/* 2. CellGroup 分组测试 */}
       <View style={styles.testSection}>
-        <Text style={styles.sectionTitle}>🎨 样式和交互</Text>
-        <Text style={styles.description}>测试圆角、遮罩、关闭按钮等样式功能</Text>
-        <View style={styles.buttonRow}>
-          {renderButton('圆角弹窗', () => setRoundVisible(true))}
-          {renderButton('无遮罩弹窗', () => setNoOverlayVisible(true))}
-        </View>
-        <View style={styles.buttonRow}>
-          {renderButton('可关闭弹窗', () => setCloseableVisible(true))}
-          {renderButton('自定义图标', () => setCustomIconVisible(true))}
-        </View>
-        <View style={styles.buttonRow}>
-          {renderButton('自定义样式', () => setCustomStyleVisible(true))}
-        </View>
+        <Text style={styles.sectionTitle}>📁 CellGroup 分组功能</Text>
+        <Text style={styles.description}>测试分组标题、inset、border属性</Text>
+
+        {/* 普通分组 */}
+        <CellComponent.Group title="基本信息" border={true}>
+          <CellComponent title="姓名" value="李四" />
+          <CellComponent title="年龄" value="28岁" />
+        </CellComponent.Group>
+
+        {/* 卡片风格分组 */}
+        <CellComponent.Group title="账户设置" inset={true} border={true} style={{ marginTop: 10 }}>
+          <CellComponent title="密码修改" value="修改" isLink={true} />
+          <CellComponent title="登录设备" value="管理" isLink={true} />
+        </CellComponent.Group>
+
+        {/* 无边框分组 */}
+        <CellComponent.Group border={false} style={{ marginTop: 10 }}>
+          <CellComponent title="系统版本" value="v2.1.0" />
+          <CellComponent title="更新时间" value={currentTime} />
+        </CellComponent.Group>
       </View>
 
-      {/* 动画效果测试 */}
+      {/* 3. 可点击功能测试 */}
       <View style={styles.testSection}>
-        <Text style={styles.sectionTitle}>✨ 动画效果</Text>
-        <Text style={styles.description}>体验增强的动画系统和缓动效果</Text>
-        <View style={styles.buttonRow}>
-          {renderButton('淡入淡出', () => setFadeVisible(true), '#FF9800')}
-          {renderButton('缩放动画', () => setScaleVisible(true), '#4CAF50')}
-        </View>
-        <View style={styles.buttonRow}>
-          {renderButton('多层弹窗', () => setMultiLayerVisible(true), '#9C27B0')}
+        <Text style={styles.sectionTitle}>👆 可点击功能</Text>
+        <Text style={styles.description}>测试onPress、url、isLink、clickable属性</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="点击事件"
+            value="点击测试"
+            onPress={() => handleCellPress('基础点击事件')}
+          />
+          <CellComponent
+            title="链接跳转"
+            value="打开百度"
+            url="https://www.baidu.com"
+            isLink={true}
+          />
+          <CellComponent
+            title="路由跳转模拟"
+            value="去设置页"
+            to="/settings"
+            isLink={true}
+            onPress={() => handleCellPress('路由跳转 (to属性)')}
+          />
+          <CellComponent
+            title="仅链接样式"
+            value="无点击事件"
+            isLink={true}
+          />
         </View>
       </View>
 
-      {/* 居中弹窗 */}
-      <PopupComponent
-        visible={centerVisible}
-        onClose={() => setCenterVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={styles.popupTitle}>居中弹窗</Text>
-          <Text style={styles.popupText}>这是一个居中的弹窗组件</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setCenterVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 4. 图标功能测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>🎨 图标功能</Text>
+        <Text style={styles.description}>测试icon、rightIcon属性：左侧和右侧图标显示</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="左侧图标"
+            value="Emoji图标"
+            icon={<Text style={styles.icon}>👤</Text>}
+          />
+          <CellComponent
+            title="字符串图标"
+            value="MaterialIcons"
+            icon="person"
+          />
+          <CellComponent
+            title="右侧图标"
+            value="右边图标"
+            rightIcon={<Text style={styles.icon}>🔥</Text>}
+          />
+          <CellComponent
+            title="双侧图标"
+            value="左右都有"
+            icon={<Text style={styles.icon}>⭐</Text>}
+            rightIcon={<Text style={styles.icon}>❤️</Text>}
+            isLink={true}
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 顶部弹窗 */}
-      <PopupComponent
-        visible={topVisible}
-        position="top"
-        round={true}
-        onClose={() => setTopVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={styles.popupTitle}>顶部弹窗</Text>
-          <Text style={styles.popupText}>从顶部滑出的弹窗</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setTopVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 5. 箭头方向测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>➡️ 箭头方向</Text>
+        <Text style={styles.description}>测试arrowDirection属性：left、right、up、down</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="向右箭头"
+            value="默认方向"
+            isLink={true}
+            arrowDirection="right"
+          />
+          <CellComponent
+            title="向左箭头"
+            value="返回样式"
+            isLink={true}
+            arrowDirection="left"
+          />
+          <CellComponent
+            title="向上箭头"
+            value="展开"
+            isLink={true}
+            arrowDirection="up"
+          />
+          <CellComponent
+            title="向下箭头"
+            value="折叠"
+            isLink={true}
+            arrowDirection="down"
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 底部弹窗 */}
-      <PopupComponent
-        visible={bottomVisible}
-        position="bottom"
-        round={true}
-        onClose={() => setBottomVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={styles.popupTitle}>底部弹窗</Text>
-          <Text style={styles.popupText}>从底部滑出的弹窗</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setBottomVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 6. 尺寸和布局测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>📏 尺寸和布局</Text>
+        <Text style={styles.description}>测试size、center、border、required属性</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="大尺寸单元格"
+            value="Large Size"
+            size="large"
+            label="更大的高度和字体"
+          />
+          <CellComponent
+            title="正常尺寸"
+            value="Normal Size"
+            size="normal"
+          />
+          <CellComponent
+            title="居中布局"
+            value="Center Align"
+            center={true}
+          />
+          <CellComponent
+            title="必填字段"
+            value="请输入"
+            required={true}
+            isLink={true}
+          />
+          <CellComponent
+            title="无边框样式"
+            value="No Border"
+            border={false}
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 左侧弹窗 */}
-      <PopupComponent
-        visible={leftVisible}
-        position="left"
-        onClose={() => setLeftVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={styles.popupTitle}>左侧弹窗</Text>
-          <Text style={styles.popupText}>从左侧滑出的弹窗</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setLeftVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 7. 插槽功能测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>🔧 插槽功能</Text>
+        <Text style={styles.description}>测试自定义内容渲染</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title={
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={[styles.icon, { marginRight: 5 }]}>🏷️</Text>
+                <Text style={{ fontWeight: 'bold', color: Colors.primary }}>自定义标题</Text>
+              </View>
+            }
+            value="标准值"
+          />
+          <CellComponent
+            title="自定义值显示"
+            value={
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ color: Colors.primary }}>¥</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: Colors.primary }}>128.50</Text>
+              </View>
+            }
+          />
+          <CellComponent
+            title="复杂描述"
+            label={
+              <View>
+                <Text style={{ color: Colors.text.secondary, fontSize: 12 }}>
+                  多行描述信息，支持复杂布局
+                </Text>
+                <Text style={{ color: Colors.required, fontSize: 11 }}>
+                  ⚠️ 请仔细阅读
+                </Text>
+              </View>
+            }
+            value="了解更多"
+            isLink={true}
+          />
+          <CellComponent
+            title="额外内容"
+            value="主要操作"
+            extra={
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.badge}>NEW</Text>
+                <Text style={[styles.icon, { marginLeft: 5 }]}>🔥</Text>
+              </View>
+            }
+            isLink={true}
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 右侧弹窗 */}
-      <PopupComponent
-        visible={rightVisible}
-        position="right"
-        onClose={() => setRightVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={styles.popupTitle}>右侧弹窗</Text>
-          <Text style={styles.popupText}>从右侧滑出的弹窗</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setRightVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 8. 样式定制测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>🎨 样式定制</Text>
+        <Text style={styles.description}>测试titleStyle、valueStyle、labelStyle</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="自定义标题样式"
+            value="正常值"
+            titleStyle={{ color: Colors.primary, fontWeight: 'bold', fontSize: 18 }}
+          />
+          <CellComponent
+            title="自定义值样式"
+            value="红色值"
+            valueStyle={{ color: Colors.required, fontSize: 16 }}
+          />
+          <CellComponent
+            title="样式描述"
+            label="这个描述有自定义样式"
+            value="查看"
+            labelStyle={{ color: Colors.primary, fontStyle: 'italic' }}
+            isLink={true}
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 圆角弹窗 */}
-      <PopupComponent
-        visible={roundVisible}
-        round={true}
-        onClose={() => setRoundVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={styles.popupTitle}>圆角弹窗</Text>
-          <Text style={styles.popupText}>带有圆角样式的弹窗</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setRoundVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 9. 综合场景测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>🚀 综合场景</Text>
+        <Text style={styles.description}>模拟真实应用中的复杂用法</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            icon={<Text style={styles.icon}>💳</Text>}
+            title="银行卡管理"
+            label="已绑定2张银行卡，支持快捷支付"
+            value="管理"
+            isLink={true}
+            onPress={() => handleCellPress('进入银行卡管理')}
+          />
+          <CellComponent
+            icon={<Text style={styles.icon}>📍</Text>}
+            title="收货地址"
+            label="默认地址：北京市朝阳区"
+            value="修改"
+            rightIcon={<Text style={styles.badge}>默认</Text>}
+            isLink={true}
+            onPress={() => handleCellPress('修改收货地址')}
+          />
+          <CellComponent
+            icon={<Text style={styles.icon}>🔔</Text>}
+            title="消息通知"
+            label="您有3条未读消息，2条系统通知"
+            value={
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.badge}>3</Text>
+                <Text style={{ marginLeft: 5, color: Colors.text.secondary }}>查看</Text>
+              </View>
+            }
+            isLink={true}
+            onPress={() => handleCellPress('查看消息通知')}
+          />
+          <CellComponent
+            icon={<Text style={styles.icon}>⚙️</Text>}
+            title="系统设置"
+            label="通知、隐私、存储、关于我们"
+            extra={
+              <Text style={{ color: Colors.text.light, fontSize: 12 }}>
+                v2.1.0
+              </Text>
+            }
+            isLink={true}
+            onPress={() => handleCellPress('进入系统设置')}
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 无遮罩弹窗 */}
-      <PopupComponent
-        visible={noOverlayVisible}
-        overlay={false}
-        onClose={() => setNoOverlayVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={styles.popupTitle}>无遮罩弹窗</Text>
-          <Text style={styles.popupText}>没有背景遮罩的弹窗</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setNoOverlayVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 10. 交互测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>⚡ 交互测试</Text>
+        <Text style={styles.description}>测试各种交互行为和状态变化</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="刷新时间"
+            value={currentTime}
+            icon={<Text style={styles.icon}>🔄</Text>}
+            onPress={() => {
+              refreshTime();
+              handleCellPress('时间已刷新');
+            }}
+          />
+          <CellComponent
+            title="计数器"
+            value={`已点击 ${clickCount} 次`}
+            icon={<Text style={styles.icon}>📊</Text>}
+            onPress={() => handleCellPress(`这是第 ${clickCount + 1} 次点击`)}
+          />
+          <CellComponent
+            title="外部链接"
+            value="访问GitHub"
+            url="https://github.com"
+            isLink={true}
+          />
+          <CellComponent
+            title="异步操作模拟"
+            value="加载中..."
+            onPress={() => {
+              handleCellPress('开始异步操作', () => {
+                setTimeout(() => {
+                  Alert.alert('完成', '异步操作已完成');
+                }, 2000);
+              });
+            }}
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 可关闭弹窗 */}
-      <PopupComponent
-        visible={closeableVisible}
-        closeable={true}
-        onClose={() => setCloseableVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={styles.popupTitle}>可关闭弹窗</Text>
-          <Text style={styles.popupText}>右上角有关闭按钮</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setCloseableVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 11. 禁用状态测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>🚫 禁用状态测试</Text>
+        <Text style={styles.description}>测试disabled属性：禁用时的视觉效果和交互行为</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="禁用状态"
+            value="无法点击"
+            disabled={true}
+            onPress={() => handleCellPress('这个不应该被触发')}
+          />
+          <CellComponent
+            title="禁用链接"
+            value="无法跳转"
+            url="https://www.baidu.com"
+            disabled={true}
+            isLink={true}
+          />
+          <CellComponent
+            title="正常状态对比"
+            value="可以点击"
+            onPress={() => handleCellPress('正常点击')}
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 自定义图标弹窗 */}
-      <PopupComponent
-        visible={customIconVisible}
-        closeable={true}
-        closeIcon={<Text style={{ fontSize: 20 }}>✕</Text>}
-        closeIconPosition="top-left"
-        onClose={() => setCustomIconVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={styles.popupTitle}>自定义关闭图标</Text>
-          <Text style={styles.popupText}>左上角的自定义关闭图标</Text>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setCustomIconVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 12. 路由模式测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>🧭 路由导航测试</Text>
+        <Text style={styles.description}>测试to、replace属性：路由跳转和替换模式</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="普通跳转"
+            value="navigate模式"
+            to="Settings" // 模拟路由名称
+            isLink={true}
+            onPress={() => handleCellPress('普通跳转模式')}
+          />
+          <CellComponent
+            title="替换跳转"
+            value="replace模式"
+            to="Profile"
+            replace={true}
+            isLink={true}
+            onPress={() => handleCellPress('替换跳转模式')}
+          />
+          <CellComponent
+            title="带参数跳转"
+            value="params对象"
+            to={{ name: "Detail", params: { id: 123 } }}
+            isLink={true}
+            onPress={() => handleCellPress('带参数的路由跳转')}
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 自定义样式弹窗 */}
-      <PopupComponent
-        visible={customStyleVisible}
-        contentStyle={{
-          backgroundColor: '#f0f8ff',
-          borderWidth: 2,
-          borderColor: Colors.primary
-        }}
-        overlayStyle={{
-          backgroundColor: 'rgba(25, 118, 210, 0.3)'
-        }}
-        onClose={() => setCustomStyleVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={[styles.popupTitle, { color: Colors.primary }]}>自定义样式</Text>
-          <Text style={styles.popupText}>带有自定义背景色和边框的弹窗</Text>
-          <TouchableOpacity
-            style={[styles.closeButton, { backgroundColor: Colors.primary }]}
-            onPress={() => setCustomStyleVisible(false)}
+      {/* 13. 子元素插槽测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>👶 子元素插槽测试</Text>
+        <Text style={styles.description}>测试children属性：在标题行中插入自定义内容</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="标题"
+            value="右侧值"
           >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+            <Text style={styles.badge}>NEW</Text>
+          </CellComponent>
+          <CellComponent
+            title="自定义徽章"
+            value="重要通知"
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={[styles.badge, { backgroundColor: Colors.required }]}>HOT</Text>
+              <Text style={[styles.icon, { marginLeft: 4 }]}>🔥</Text>
+            </View>
+          </CellComponent>
+          <CellComponent
+            title="状态指示器"
+            value="在线"
+          >
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#4CAF50', marginLeft: 6 }} />
+          </CellComponent>
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 淡入淡出动画弹窗 */}
-      <PopupComponent
-        visible={fadeVisible}
-        onClose={() => setFadeVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={[styles.popupTitle, { color: '#FF9800' }]}>✨ 淡入淡出动画</Text>
-          <Text style={styles.popupText}>体验流畅的透明度过渡效果</Text>
-          <View style={styles.animationDemo}>
-            <Text style={styles.demoText}>• 使用 Easing.out(Easing.quad) 缓动</Text>
-            <Text style={styles.demoText}>• 160ms 动画时长</Text>
-            <Text style={styles.demoText}>• 原生驱动优化性能</Text>
-          </View>
-          <TouchableOpacity
-            style={[styles.closeButton, { backgroundColor: '#FF9800' }]}
-            onPress={() => setFadeVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
+      {/* 14. 边界情况测试 */}
+      <View style={styles.testSection}>
+        <Text style={styles.sectionTitle}>⚠️ 边界情况测试</Text>
+        <Text style={styles.description}>测试极端情况：长文本、空内容、特殊字符等</Text>
+        <View style={styles.cellGroup}>
+          <CellComponent
+            title="超长标题文本超长标题文本超长标题文本超长标题文本超长标题文本"
+            value="正常值"
+          />
+          <CellComponent
+            title="标题"
+            value="超长值文本超长值文本超长值文本超长值文本超长值文本超长值文本"
+          />
+          <CellComponent
+            title=""
+            value=""
+            label=""
+          />
+          <CellComponent
+            title="特殊字符"
+            value="¥$€£@#%&*()[]{}"
+          />
+          <CellComponent
+            title="数字标题"
+            value="123456789"
+          />
         </View>
-      </PopupComponent>
+      </View>
 
-      {/* 缩放动画弹窗 */}
-      <PopupComponent
-        visible={scaleVisible}
-        onClose={() => setScaleVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={[styles.popupTitle, { color: '#4CAF50' }]}>🔍 缩放动画</Text>
-          <Text style={styles.popupText}>居中弹窗的弹性缩放效果</Text>
-          <View style={styles.animationDemo}>
-            <Text style={styles.demoText}>• Spring 弹性动画</Text>
-            <Text style={styles.demoText}>• friction: 8</Text>
-            <Text style={styles.demoText}>• 从 0.9 缩放到 1.0</Text>
-          </View>
-          <TouchableOpacity
-            style={[styles.closeButton, { backgroundColor: '#4CAF50' }]}
-            onPress={() => setScaleVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
-        </View>
-      </PopupComponent>
-
-      {/* 多层弹窗演示 */}
-      <PopupComponent
-        visible={multiLayerVisible}
-        onClose={() => setMultiLayerVisible(false)}
-      >
-        <View style={styles.popupContent}>
-          <Text style={[styles.popupTitle, { color: '#9C27B0' }]}>🎭 多层动画</Text>
-          <Text style={styles.popupText}>同时运行多种动画类型</Text>
-          <View style={styles.animationDemo}>
-            <Text style={styles.demoText}>• 平移 + 透明度</Text>
-            <Text style={styles.demoText}>• 缩放 + 透明度</Text>
-            <Text style={styles.demoText}>• 遮罩透明度渐变</Text>
-            <Text style={styles.demoText}>• 全部并行执行</Text>
-          </View>
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={[styles.miniButton, { backgroundColor: '#FF9800' }]}
-              onPress={() => {
-                setMultiLayerVisible(false);
-                setTimeout(() => setCenterVisible(true), 300);
-              }}
-            >
-              <Text style={styles.miniButtonText}>居中弹窗</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.miniButton, { backgroundColor: '#4CAF50' }]}
-              onPress={() => {
-                setMultiLayerVisible(false);
-                setTimeout(() => setRoundVisible(true), 300);
-              }}
-            >
-              <Text style={styles.miniButtonText}>圆角弹窗</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            style={[styles.closeButton, { backgroundColor: '#9C27B0', marginTop: 10 }]}
-            onPress={() => setMultiLayerVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>关闭</Text>
-          </TouchableOpacity>
-        </View>
-      </PopupComponent>
     </ScrollView>
   );
 };
@@ -388,16 +514,14 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
     marginTop: 5,
   },
+  counter: {
+    fontSize: 12,
+    color: Colors.primary,
+    marginTop: 8,
+    fontWeight: '600',
+  },
   testSection: {
-    backgroundColor: Colors.white,
-    margin: 10,
-    padding: 15,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+
   },
   sectionTitle: {
     fontSize: 16,
@@ -411,76 +535,47 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     lineHeight: 16,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  button: {
-    flex: 1,
-    backgroundColor: Colors.primary,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+  cellGroup: {
     borderRadius: Theme.radius.sm,
-    marginHorizontal: 5,
-    alignItems: 'center',
+    overflow: 'hidden',
+    backgroundColor: Colors.white,
   },
-  buttonText: {
+  icon: {
+    fontSize: 16,
+  },
+  badge: {
+    fontSize: 12,
     color: Colors.white,
+    backgroundColor: Colors.required,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    overflow: 'hidden',
+    textAlign: 'center',
+    minWidth: 20,
+  },
+  refreshIcon: {
     fontSize: 14,
-    fontWeight: '600',
+    color: Colors.primary,
   },
-  popupContent: {
-    padding: Theme.spacing.lg,
-    alignItems: 'center',
+  customTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.primary,
   },
-  popupTitle: {
+  priceText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.text.primary,
-    marginBottom: Theme.spacing.sm,
+    color: Colors.primary,
   },
-  popupText: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    textAlign: 'center',
-    marginBottom: Theme.spacing.lg,
-    lineHeight: 20,
+  warningText: {
+    color: Colors.required,
+    fontSize: 11,
+    fontStyle: 'italic',
   },
-  closeButton: {
-    backgroundColor: Colors.primary,
-    paddingVertical: Theme.spacing.sm,
-    paddingHorizontal: Theme.spacing.lg,
-    borderRadius: Theme.radius.sm,
-  },
-  closeButtonText: {
-    color: Colors.white,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  animationDemo: {
-    backgroundColor: '#f8f9fa',
-    padding: Theme.spacing.md,
-    borderRadius: Theme.radius.sm,
-    marginVertical: Theme.spacing.sm,
-  },
-  demoText: {
+  versionText: {
+    color: Colors.text.light,
     fontSize: 12,
-    color: Colors.text.secondary,
-    marginBottom: 2,
-    lineHeight: 16,
-  },
-  miniButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: Theme.radius.sm,
-    marginHorizontal: 4,
-    alignItems: 'center',
-  },
-  miniButtonText: {
-    color: Colors.white,
-    fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '500',
   },
 });
