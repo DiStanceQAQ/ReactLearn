@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '../constants/colors';
-import { HomeScreen } from '../screens/HomeScreen';
+import { DemoNavigator } from './DemoNavigator';
 import { TodoScreen } from '../screens/TodoScreen';
 import { ReviewScreen } from '../screens/ReviewScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
@@ -23,8 +23,8 @@ export const BottomTabNavigator = () => {
         },
       }}>
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+        name="Components"
+        component={DemoNavigator}
         options={{
           tabBarLabel: '首页',
           tabBarIcon: ({ color, size }) => (

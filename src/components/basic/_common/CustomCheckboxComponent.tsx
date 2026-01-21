@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { View, Text, StyleSheet, Pressable, StyleProp, ViewStyle, DimensionValue } from "react-native";
 import { Colors } from "../../../constants/colors";
+import { Theme } from "../../../constants/theme";
 
 type Option = { value: string; name: string };
 
@@ -63,7 +64,7 @@ export default function CustomCheckboxComponent({
       {label ? (
         <View style={[styles.labelWrap, labelWidth ? { width: labelWidth } : null]}>
           <Text style={[styles.labelText, { textAlign: labelAlign }]}>
-            {required ? "*" : ""}
+            {required ? <Text style={styles.requiredStar}>*</Text> : null}
             {label}
           </Text>
         </View>
@@ -119,18 +120,21 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "flex-start",
-    paddingVertical: 8
+    paddingVertical: Theme.spacing.sm
   },
   labelWrap: {
-    marginRight: 8,
-    paddingTop: 4,
+    marginRight: Theme.spacing.sm,
+    paddingTop: Theme.spacing.xs,
     flexShrink: 1
   },
   labelText: {
     color: Colors.text.secondary,
-    fontSize: 13,
+    fontSize: Theme.fontSize.sm,
     flexShrink: 1,
     flexWrap: "wrap"
+  },
+  requiredStar: {
+    color: Colors.required
   },
   group: {
     flex: 1,
@@ -143,13 +147,13 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     flexWrap: "nowrap",
     alignItems: "flex-start",
-    gap: 8
+    gap: Theme.spacing.sm
   },
   option: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 12,
-    marginBottom: 8
+    marginRight: Theme.spacing.md,
+    marginBottom: Theme.spacing.sm
   },
   optionVertical: {
     marginRight: 0,
@@ -163,10 +167,10 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 22,
     height: 22,
-    borderRadius: 4,
-    borderWidth: 1,
+    borderRadius: Theme.radius.sm,
+    borderWidth: Theme.border.width,
     borderColor: Colors.border,
-    marginRight: 8,
+    marginRight: Theme.spacing.sm,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: Colors.white
@@ -181,12 +185,12 @@ const styles = StyleSheet.create({
   },
   checkMark: {
     color: Colors.white,
-    fontSize: 12,
+    fontSize: Theme.fontSize.xs,
     fontWeight: "600"
   },
   optionText: {
-    fontSize: 13,
-    lineHeight: 13,
+    fontSize: Theme.fontSize.sm,
+    lineHeight: Theme.lineHeight.sm,
     color: Colors.text.primary
   },
   optionTextDisabled: {

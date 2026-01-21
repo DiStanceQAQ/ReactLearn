@@ -1,5 +1,5 @@
 // src/components/basic/_common/CustomFieldComponent.tsx
-import React, { ReactNode, useCallback, useMemo, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -56,7 +56,7 @@ export default function CustomFieldComponent({
   error = false,
   errorMessage,
   placeholder = "Please enter",
-  value = "",
+  value,
   onChange,
   onClick,
   maxLength,
@@ -73,7 +73,16 @@ export default function CustomFieldComponent({
 
   const isTextarea = type === "textarea";
   const isDisabledInput = disabled || readonly || clickable;
-  const displayValue = useMemo(() => value ?? "", [value]);
+  const isControlled = value !== undefined || onChange !== undefined;
+  const [innerValue, setInnerValue] = useState<string>(value ?? "");
+
+  useEffect(() => {
+    if (isControlled) {
+      setInnerValue(value ?? "");
+    }
+  }, [isControlled, value]);
+
+  const displayValue = useMemo(() => innerValue, [innerValue]);
   const canClear = useMemo(
     () => clearable && !!displayValue && !(disabled || readonly || clickable),
     [clearable, displayValue, disabled, readonly, clickable]
@@ -94,20 +103,29 @@ export default function CustomFieldComponent({
   const handleChangeText = useCallback(
     (text: string) => {
       const next = applyFormatter(text);
-      onChange?.(next);
+      if (isControlled) {
+        onChange?.(next);
+      } else {
+        setInnerValue(next);
+      }
     },
-    [applyFormatter, onChange]
+    [applyFormatter, isControlled, onChange]
   );
 
   const handleBlur = useCallback(() => {
     setFocused(false);
     if (formatter) {
-      const next = applyFormatter(displayValue);
-      if (next !== displayValue) {
-        onChange?.(next);
+      const source = displayValue;
+      const next = applyFormatter(source);
+      if (next !== source) {
+        if (isControlled) {
+          onChange?.(next);
+        } else {
+          setInnerValue(next);
+        }
       }
     }
-  }, [applyFormatter, displayValue, formatter, onChange]);
+  }, [applyFormatter, displayValue, formatter, isControlled, onChange]);
 
   const handleFocus = useCallback(() => {
     setFocused(true);
@@ -115,8 +133,12 @@ export default function CustomFieldComponent({
 
   const handleClear = useCallback(() => {
     if (disabled || readonly || clickable) return;
-    onChange?.("");
-  }, [disabled, readonly, clickable, onChange]);
+    if (isControlled) {
+      onChange?.("");
+    } else {
+      setInnerValue("");
+    }
+  }, [clickable, disabled, isControlled, onChange, readonly]);
 
   const handlePress = useCallback(() => {
     if (disabled) return;
@@ -157,13 +179,13 @@ export default function CustomFieldComponent({
           {leftIcon ? <View style={styles.iconSlot}>{leftIcon}</View> : null}
 
           <TextInput
-            style={[
-              styles.input,
-              isTextarea ? styles.textareaInput : null,
-              disabled || readonly ? styles.inputDisabled : null,
-              inputStyle
-            ]}
-            textAlign={inputAlign}
+          style={[
+            styles.input,
+            isTextarea ? styles.textareaInput : null,
+            disabled || readonly ? styles.inputDisabled : null,
+            { textAlign: inputAlign },
+            inputStyle
+          ]}
             value={displayValue}
             onChangeText={handleChangeText}
             placeholder={placeholder}
