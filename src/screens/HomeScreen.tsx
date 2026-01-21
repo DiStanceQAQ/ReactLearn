@@ -37,6 +37,7 @@ export const HomeScreen = () => {
         { name: 'Badge', chineseName: '徽标', screen: 'BadgeDemo', available: true },
         { name: 'Empty', chineseName: '空状态', screen: 'EmptyDemo', available: true },
         { name: 'Image', chineseName: '图片', screen: 'ImageDemo', available: true },
+        { name: 'Uploader', chineseName: '文件上传', screen: 'FileUploadDemo', available: true },
       ],
     },
     {
