@@ -137,12 +137,36 @@ export function OverlayProvider({ children }: { children?: React.ReactNode }) {
     }
   }, [animateClose]);
 
-  const open = useCallback((options: OverlayOptions) => {
-    const entry = buildEntry(options);
-    setEntries(prev => [...prev.filter(e => e.key !== entry.key), entry]);
-    animateOpen(entry);
-    return entry.key;
-  }, [animateOpen]);
+  const open = useCallback(
+    (options: OverlayOptions) => {
+      const existing = options.key ? entriesRef.current.find(e => e.key === options.key) : undefined;
+
+      if (existing) {
+        const updated: OverlayEntry = {
+          ...existing,
+          ...options,
+          key: existing.key,
+          overlayAnim: existing.overlayAnim,
+          overlayOpacity: options.overlayOpacity ?? existing.overlayOpacity,
+          overlayColor: options.overlayColor ?? existing.overlayColor,
+          closeOnOverlayPress: options.closeOnOverlayPress ?? existing.closeOnOverlayPress,
+          zIndex: options.zIndex ?? existing.zIndex,
+          onClose: options.onClose ?? existing.onClose,
+          onOverlayPress: options.onOverlayPress ?? existing.onOverlayPress,
+          disablePointerEvents: options.disablePointerEvents ?? existing.disablePointerEvents,
+          waitForRenderClose: options.waitForRenderClose ?? existing.waitForRenderClose
+        };
+        setEntries(prev => prev.map(e => (e.key === existing.key ? updated : e)));
+        return existing.key;
+      }
+
+      const entry = buildEntry(options);
+      setEntries(prev => [...prev.filter(e => e.key !== entry.key), entry]);
+      animateOpen(entry);
+      return entry.key;
+    },
+    [animateOpen]
+  );
 
   const closeAll = useCallback(() => {
     entriesRef.current.forEach(entry => {

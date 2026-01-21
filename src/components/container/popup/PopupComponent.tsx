@@ -264,36 +264,31 @@ export default function PopupComponent({
   );
 
   useEffect(() => {
-    if (!usingPortal || !openOverlay || !closeOverlay) {
-      return;
-    }
+    if (!usingPortal || !openOverlay || !closeOverlay) return;
 
-    if (visible) {
-      if (!overlayKeyRef.current) {
-        overlayKeyRef.current = openOverlay({
-          render: renderPortalContent,
-          overlayOpacity: overlay ? overlayOpacity : 0,
-          overlayColor: "#000",
-          closeOnOverlayPress: overlay ? closeOnClickOverlay : false,
-          onOverlayPress: closeOnClickOverlay ? notifyOnClose : undefined,
-          waitForRenderClose: true,
-          onClose: () => {
-            notifyOnClose();
-            overlayKeyRef.current = null;
-          },
-          zIndex
-        });
-      }
-    } else if (overlayKeyRef.current) {
-      closeOverlay(overlayKeyRef.current);
-    }
-
-    return () => {
+    if (!visible) {
       if (overlayKeyRef.current) {
         closeOverlay(overlayKeyRef.current);
         overlayKeyRef.current = null;
       }
-    };
+      return;
+    }
+
+    // open or update existing portal entry with latest render content/props
+    overlayKeyRef.current = openOverlay({
+      key: overlayKeyRef.current || undefined,
+      render: renderPortalContent,
+      overlayOpacity: overlay ? overlayOpacity : 0,
+      overlayColor: "#000",
+      closeOnOverlayPress: overlay ? closeOnClickOverlay : false,
+      onOverlayPress: closeOnClickOverlay ? notifyOnClose : undefined,
+      waitForRenderClose: true,
+      onClose: () => {
+        notifyOnClose();
+        overlayKeyRef.current = null;
+      },
+      zIndex
+    });
   }, [
     usingPortal,
     openOverlay,
@@ -306,6 +301,16 @@ export default function PopupComponent({
     notifyOnClose,
     zIndex
   ]);
+
+  // cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (overlayKeyRef.current && closeOverlay) {
+        closeOverlay(overlayKeyRef.current);
+        overlayKeyRef.current = null;
+      }
+    };
+  }, [closeOverlay]);
 
   if (usingPortal) {
     return null;
