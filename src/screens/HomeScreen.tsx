@@ -34,6 +34,9 @@ export const HomeScreen = () => {
       components: [
         { name: 'Button', chineseName: '按钮', screen: 'ButtonDemo', available: true },
         { name: 'Cell', chineseName: '单元格', screen: 'CellDemo', available: true },
+        { name: 'Badge', chineseName: '徽标', screen: 'BadgeDemo', available: true },
+        { name: 'Empty', chineseName: '空状态', screen: 'EmptyDemo', available: true },
+        { name: 'Image', chineseName: '图片', screen: 'ImageDemo', available: true },
       ],
     },
     {

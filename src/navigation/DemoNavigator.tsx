@@ -12,6 +12,9 @@ import { ToastDemo } from '../screens/demos/ToastDemo';
 import { PopupDemo } from '../screens/demos/PopupDemo';
 import { FormDemo } from '../screens/demos/FormDemo';
 import { ProjectCardDemo } from '../screens/demos/ProjectCardDemo';
+import { BadgeDemo } from '../screens/demos/BadgeDemo';
+import { EmptyDemo } from '../screens/demos/EmptyDemo';
+import { ImageDemo } from '../screens/demos/ImageDemo';
 
 const Stack = createNativeStackNavigator();
 
@@ -89,7 +92,21 @@ export const DemoNavigator = () => {
         component={ProjectCardDemo}
         options={{ title: 'ProjectCard 项目卡片' }}
       />
+      <Stack.Screen
+        name="BadgeDemo"
+        component={BadgeDemo}
+        options={{ title: 'Badge 徽标' }}
+      />
+      <Stack.Screen
+        name="EmptyDemo"
+        component={EmptyDemo}
+        options={{ title: 'Empty 空状态' }}
+      />
+      <Stack.Screen
+        name="ImageDemo"
+        component={ImageDemo}
+        options={{ title: 'Image 图片' }}
+      />
     </Stack.Navigator>
   );
 };
-
