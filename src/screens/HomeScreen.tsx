@@ -37,7 +37,6 @@ export const HomeScreen = () => {
         { name: 'Badge', chineseName: '徽标', screen: 'BadgeDemo', available: true },
         { name: 'Empty', chineseName: '空状态', screen: 'EmptyDemo', available: true },
         { name: 'Image', chineseName: '图片', screen: 'ImageDemo', available: true },
-        { name: 'Uploader', chineseName: '文件上传', screen: 'FileUploadDemo', available: true },
       ],
     },
     {
@@ -48,6 +47,8 @@ export const HomeScreen = () => {
         { name: 'Cascader', chineseName: '级联选择', screen: 'CascaderDemo', available: true },
         { name: 'Checkbox', chineseName: '复选框', screen: 'CheckboxDemo', available: true },
         { name: 'DatePicker', chineseName: '日期选择器', screen: 'DatePickerDemo', available: true },
+        { name: 'Calendar', chineseName: '日历', screen: 'CalendarDemo', available: true },
+        { name: 'Uploader', chineseName: '文件上传', screen: 'FileUploadDemo', available: true },
       ],
     },
     {

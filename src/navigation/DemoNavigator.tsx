@@ -16,6 +16,7 @@ import { BadgeDemo } from '../screens/demos/BadgeDemo';
 import { EmptyDemo } from '../screens/demos/EmptyDemo';
 import { ImageDemo } from '../screens/demos/ImageDemo';
 import { FileUploadDemo } from '../screens/demos/FileUploadDemo';
+import { CalendarDemo } from '../screens/demos/CalendarDemo';
 
 const Stack = createNativeStackNavigator();
 
@@ -112,6 +113,11 @@ export const DemoNavigator = () => {
         name="FileUploadDemo"
         component={FileUploadDemo}
         options={{ title: 'Uploader 文件上传' }}
+      />
+      <Stack.Screen
+        name="CalendarDemo"
+        component={CalendarDemo}
+        options={{ title: 'Calendar 日历' }}
       />
     </Stack.Navigator>
   );
