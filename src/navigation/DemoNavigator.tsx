@@ -17,6 +17,7 @@ import { EmptyDemo } from '../screens/demos/EmptyDemo';
 import { ImageDemo } from '../screens/demos/ImageDemo';
 import { FileUploadDemo } from '../screens/demos/FileUploadDemo';
 import { CalendarDemo } from '../screens/demos/CalendarDemo';
+import SwitchDemo from '../screens/demos/SwitchDemo'
 
 const Stack = createNativeStackNavigator();
 
@@ -118,6 +119,11 @@ export const DemoNavigator = () => {
         name="CalendarDemo"
         component={CalendarDemo}
         options={{ title: 'Calendar 日历' }}
+      />
+      <Stack.Screen
+        name="SwitchDemo"
+        component={SwitchDemo}
+        options={{ title: 'Switch 开关' }}
       />
     </Stack.Navigator>
   );

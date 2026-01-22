@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CalendarComponent from "../../components/form/calendar/Calendar";
+import CalendarComponent from "../../components/form/calendar/CalendarComponent";
 import CellComponent from "../../components/basic/cell/CellComponent";
 import PopupComponent from "../../components/container/popup/PopupComponent";
 import { Colors } from "../../constants/colors";
