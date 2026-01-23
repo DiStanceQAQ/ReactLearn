@@ -17,7 +17,8 @@ import { EmptyDemo } from '../screens/demos/EmptyDemo';
 import { ImageDemo } from '../screens/demos/ImageDemo';
 import { FileUploadDemo } from '../screens/demos/FileUploadDemo';
 import { CalendarDemo } from '../screens/demos/CalendarDemo';
-import SwitchDemo from '../screens/demos/SwitchDemo'
+import SwitchDemo from '../screens/demos/SwitchDemo';
+import DropdownMenuDemo from '../screens/demos/DropdownMenuDemo';
 
 const Stack = createNativeStackNavigator();
 
@@ -124,6 +125,11 @@ export const DemoNavigator = () => {
         name="SwitchDemo"
         component={SwitchDemo}
         options={{ title: 'Switch 开关' }}
+      />
+      <Stack.Screen
+        name="DropdownMenuDemo"
+        component={DropdownMenuDemo}
+        options={{ title: 'Dropdown Menu 下拉菜单' }}
       />
     </Stack.Navigator>
   );

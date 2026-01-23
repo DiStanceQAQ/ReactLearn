@@ -47,6 +47,7 @@ export const HomeScreen = () => {
         { name: 'Cascader', chineseName: '级联选择', screen: 'CascaderDemo', available: true },
         { name: 'Checkbox', chineseName: '复选框', screen: 'CheckboxDemo', available: true },
         { name: 'Switch', chineseName: '开关', screen: 'SwitchDemo', available: true },
+        { name: 'DropdownMenu', chineseName: '下拉菜单', screen: 'DropdownMenuDemo', available: true },
         { name: 'DatePicker', chineseName: '日期选择器', screen: 'DatePickerDemo', available: true },
         { name: 'Calendar', chineseName: '日历', screen: 'CalendarDemo', available: true },
         { name: 'Uploader', chineseName: '文件上传', screen: 'FileUploadDemo', available: true },
