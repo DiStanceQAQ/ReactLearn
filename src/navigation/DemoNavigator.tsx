@@ -19,6 +19,8 @@ import { FileUploadDemo } from '../screens/demos/FileUploadDemo';
 import { CalendarDemo } from '../screens/demos/CalendarDemo';
 import SwitchDemo from '../screens/demos/SwitchDemo';
 import DropdownMenuDemo from '../screens/demos/DropdownMenuDemo';
+import MapDemoScreen from '../screens/demos/MapDemoScreen';
+import WatermarkCameraDemo from '../screens/demos/WatermarkCameraDemo';
 
 const Stack = createNativeStackNavigator();
 
@@ -122,6 +124,11 @@ export const DemoNavigator = () => {
         options={{ title: 'Calendar 日历' }}
       />
       <Stack.Screen
+        name="MapDemo"
+        component={MapDemoScreen}
+        options={{ title: '地图示例' }}
+      />
+      <Stack.Screen
         name="SwitchDemo"
         component={SwitchDemo}
         options={{ title: 'Switch 开关' }}
@@ -130,6 +137,11 @@ export const DemoNavigator = () => {
         name="DropdownMenuDemo"
         component={DropdownMenuDemo}
         options={{ title: 'Dropdown Menu 下拉菜单' }}
+      />
+      <Stack.Screen
+        name="WatermarkCameraDemo"
+        component={WatermarkCameraDemo}
+        options={{ title: '水印相机' }}
       />
     </Stack.Navigator>
   );

@@ -70,6 +70,8 @@ export const HomeScreen = () => {
       title: '业务组件',
       components: [
         { name: 'ProjectCard', chineseName: '项目卡片', screen: 'ProjectCardDemo', available: true },
+        { name: 'Map', chineseName: '地图', screen: 'MapDemo', available: true },
+        { name: 'Camera', chineseName: '水印相机', screen: 'WatermarkCameraDemo', available: true },
       ],
     },
   ];
