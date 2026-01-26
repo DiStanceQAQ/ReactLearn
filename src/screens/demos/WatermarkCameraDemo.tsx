@@ -13,7 +13,7 @@ const WatermarkCameraDemo: React.FC = () => {
         <WatermarkCamera
           watermarkText={`MyCompany © ${new Date().getFullYear()}`}
           watermarkPosition="bottom-right"
-          onCapture={(uri) => {
+          onCapture={(uri: string) => {
             setLastUri(uri);
             Alert.alert('完成', `生成图片：${uri}`);
           }}
